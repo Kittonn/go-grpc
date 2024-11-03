@@ -7,6 +7,8 @@ import (
 
 	pb "github.com/Kittonn/go-grpc/proto/currency"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -18,6 +20,12 @@ type server struct {
 }
 
 func (s *server) GetRate(ctx context.Context, rateRequest *pb.RateRequest) (*pb.RateReply, error) {
+	log.Printf("Received request to convert from %s to %s", rateRequest.Base, rateRequest.Destination)
+
+	if rateRequest.Base == rateRequest.Destination {
+		return nil, status.Errorf(codes.InvalidArgument, "Base and destination are same")
+	}
+
 	return &pb.RateReply{
 		Rate: 0.5,
 	}, nil
